@@ -1,8 +1,12 @@
-
 // Dependencies
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var twilio = require('twilio');
+var geocoder = require('geocoder');
+var fs = require('fs');
+var request = require('request');
+
 
 // MongoDB
 mongoose.connect('mongodb://IbmCloud_jgfdj3qk_5d1of68f_qckimth7:BBORU9RitH3o72WoJQ1oMIx7wkXs1Fcv@ds055110.mongolab.com:55110/IbmCloud_jgfdj3qk_5d1of68f');
@@ -14,13 +18,51 @@ app.use(bodyParser.json());
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
-// index page 
+//Configure Push with twilio
+var twilioSid, twilioToken;
+twilioSid = "AC1f26578824ec9c19b902e9a3861d435d";
+twilioToken = "2c76f53cdcfee7a639d385c904930926";
+
+
+// index page
 app.get('/', function(req, res) {
     res.render('pages/index');
 });
 
-
 app.use('/api/v1', require('./routes/api'));
+
+app.get("/generar/reporte", function(req, res){
+  request('/api/v1/reportes', function (error, response, body) {
+    console.log(data);
+    if (!error && response.statusCode == 200) {
+       fs.writeFile("reporte.json", body, function(err) {
+            if(err) {
+                console.log(err);
+                res.redirect("/");
+            } else {
+                console.log("The file was saved!");
+                res.redirect("/");
+            }
+        });
+      }
+    });
+});
+
+app.get('/api/v1/reportes/call/:tipo/:lat/:long', function(req, res) {
+    var client = new twilio.RestClient(twilioSid, twilioToken);
+    //Configure geo localization
+    //20.7328469,-103.4561331 -> Tec de monterrey
+    geocoder.reverseGeocode(req.params.lat,req.params.long, function ( err, data ) {
+      console.log(data.results[0].formatted_address);
+      client.sendMessage({
+          to:'+5213171060735',
+          from:'+14804852321',
+          body:'Problema reportado hubo un '+req.params.tipo +' en '+data.results[0].formatted_address+'!'
+      }, function(err, message) {
+          res.redirect('/');
+      });
+    });
+});
 
 /*
 API Endpoint
