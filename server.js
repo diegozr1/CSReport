@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // set the view engine to ejs
 app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/public'));
 
 //Configure Push with twilio
 var twilioSid, twilioToken;
@@ -61,12 +62,12 @@ app.get('/api/v1/reportes/call/:tipo/:lat/:long', function(req, res) {
       }, function(err, message) {
           request('http://my-report.mybluemix.net/api/v1/reportes', function (error, response, body) {
               if (!error && response.statusCode == 200) {
-                 fs.writeFile("reporte.json", body, function(err) {
-                    if(err) {
-                        res.redirect("/");
-                    } else {
-                        res.redirect("/");
-                    }
+               fs.writeFile("reporte.json", body, function(err) {
+                  if(err) {
+                      res.redirect("/");
+                  } else {
+                      res.redirect("/");
+                  }
               });
             }
         });
