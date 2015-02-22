@@ -54,6 +54,10 @@ app.get('/maps',function(req,res){
   res.render('pages/map');
 });
 
+app.get('/analytics',function(req,res){
+  res.render('pages/map')
+});
+
 app.get('/api/v1/reportes/call/:tipo/:lat/:long', function(req, res) {
     var client = new twilio.RestClient(twilioSid, twilioToken);
     //Configure geo localization
