@@ -164,7 +164,7 @@
       $(document).ready(function() {
       var url = "../api/v1/reportes";
        //Consumir el API
-        $.getJSON("api/v1/reportes", function(json) {
+        $.getJSON("reporte.json", function(json) {
           console.log(json);
             for (var i = 0; i < json.length; i++) {
               locations [i] = [json[i].tipo, json[i].latitud, json[i].longitud, json[i].fecha];
